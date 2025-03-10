@@ -14,6 +14,7 @@ import FreeCounter from "./free-counter";
 import { CiBoxList } from "react-icons/ci";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { SiMinds } from "react-icons/si";
+import { supabase } from "@/lib/supabaseClient";
 
 const montserrat = Montserrat({ weight: "600", subsets: ["latin"] });
 
@@ -63,7 +64,10 @@ interface SidebarProps {
 
 const Sidebar: FC<SidebarProps> = ({ apiLimitCount = 0, isPro = false }) => {
   const pathname = usePathname();
-
+    const handleLogout = async () => {
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    };
   return (
     <div className="space-y-4 py-4 flex flex-col h-full bg-[#111827] text-white">
       <div className="px-3 py-2 flex-1">
@@ -91,8 +95,16 @@ const Sidebar: FC<SidebarProps> = ({ apiLimitCount = 0, isPro = false }) => {
           ))}
         </div>
       </div>
-      <FreeCounter apiLimitCount={apiLimitCount} isPro={isPro} />
+      <div className="px-3 py-2">
+        <button
+          onClick={handleLogout}
+          className="w-full cursor-pointer mt-4 bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition"
+        >
+          Logout
+        </button>
     </div>
+  </div>
+
   );
 };
 

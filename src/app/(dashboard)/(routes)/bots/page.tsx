@@ -12,6 +12,7 @@ type Bot = {
   stock_symbol: string | null;
   created_at: string;
   status: "active" | "inactive";
+  user_id: number;
 };
 
 type Strategy = {
@@ -34,9 +35,12 @@ export default function BotManagement() {
   }, []);
 
   const fetchBots = async () => {
+    const { data: session, error: sessionError } =
+				await supabase.auth.getSession();
     const { data, error } = await supabase
       .from("bots")
-      .select("id, bot_name, strategy_id, stock_symbol, created_at, status, py_strategies(name)")
+      .select("id, bot_name, strategy_id, stock_symbol, created_at, status, py_strategies(name), user_id")
+      .eq("user_id", session?.session?.user?.id)
       .order("created_at", { ascending: false });
 
     if (error) console.error(error);
@@ -44,7 +48,9 @@ export default function BotManagement() {
   };
 
   const fetchStrategies = async () => {
-    const { data, error } = await supabase.from("py_strategies").select("*");
+    const { data: session, error: sessionError } =
+				await supabase.auth.getSession();
+    const { data, error } = await supabase.from("py_strategies").select("*").eq("user_id", session?.session?.user?.id);
     if (error) console.error(error);
     else setStrategies(data || []);
   };
@@ -52,10 +58,11 @@ export default function BotManagement() {
   const handleAddBot = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!botName || !strategyId) return;
-
+    const { data: session, error: sessionError } =
+				await supabase.auth.getSession();
     const { error } = await supabase
       .from("bots")
-      .insert([{ bot_name: botName, strategy_id: strategyId, stock_symbol: stockSymbol, status }]);
+      .insert([{ bot_name: botName, strategy_id: strategyId, stock_symbol: stockSymbol, status: status, user_id: session?.session?.user?.id }]);
 
     if (error) {
       console.error(error);
@@ -154,7 +161,6 @@ export default function BotManagement() {
         <table className="w-full mt-4 border-collapse border border-gray-700 shadow-lg">
           <thead>
             <tr className="bg-gray-700">
-              <th className="p-3 border border-gray-600">ID</th>
               <th className="p-3 border border-gray-600">Bot Name</th>
               <th className="p-3 border border-gray-600">Strategy</th>
               <th className="p-3 border border-gray-600">Stock Symbol</th>
@@ -166,7 +172,6 @@ export default function BotManagement() {
           <tbody>
             {bots.map((bot) => (
               <tr key={bot.id} className="bg-gray-800 text-white text-center">
-                <td className="p-3 border border-gray-700">{bot.id}</td>
                 <td className="p-3 border border-gray-700">{bot.bot_name}</td>
                 <td className="p-3 border border-gray-700">{bot.strategy_name}</td>
                 <td className="p-3 border border-gray-700">{bot.stock_symbol}</td>

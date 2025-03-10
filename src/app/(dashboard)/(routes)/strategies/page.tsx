@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 
 interface Strategy {
   id: number;
+  user_id: number;
   name: string;
   param_1: number;
   param_2: number;
@@ -25,6 +26,8 @@ export default function StrategiesPage() {
   
     useEffect(() => {
       async function fetchData() {
+        const { data: session, error: sessionError } =
+				await supabase.auth.getSession();
         const { data: userData, error: userError } = await supabase
           .from("users")
           .select("username, profile_picture")
@@ -35,7 +38,8 @@ export default function StrategiesPage() {
   
         const { data: strategyData, error: strategyError } = await supabase
           .from("py_strategies")
-          .select("*");
+          .select("*")
+          .eq("user_id", session?.session?.user?.id);
   
         if (strategyData) setStrategies(strategyData);
         if (strategyError) console.error("Error fetching strategies:", strategyError.message);
@@ -53,7 +57,6 @@ export default function StrategiesPage() {
           <table>
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Name</th>
                 <th>Par 1</th>
                 <th>Par 2</th>
@@ -67,7 +70,6 @@ export default function StrategiesPage() {
               {strategies.length > 0 ? (
                 strategies.map((strategy) => (
                   <tr key={strategy.id}>
-                    <td>{strategy.id}</td>
                     <td>{strategy.name}</td>
                     <td>{strategy.param_1}</td>
                     <td>{strategy.param_2}</td>
