@@ -39,12 +39,19 @@ export default function BotManagement() {
 				await supabase.auth.getSession();
     const { data, error } = await supabase
       .from("bots")
-      .select("id, bot_name, strategy_id, stock_symbol, created_at, status, py_strategies(name), user_id")
+      .select("*, py_strategies(name)")
       .eq("user_id", session?.session?.user?.id)
       .order("created_at", { ascending: false });
 
+    // Map the strategy name to each bot
+    const botsWithStrategyNames = data?.map((bot: any) => ({
+      ...bot,
+      strategy_name: bot.py_strategies.name,
+    }));
+    setBots(botsWithStrategyNames || []);
+
     if (error) console.error(error);
-    else setBots(data || []);
+    // else setBots(data || []);
   };
 
   const fetchStrategies = async () => {
