@@ -9,3 +9,4 @@ pyotp
 python-dotenv
 gunicorn
 websockets
+websocket
