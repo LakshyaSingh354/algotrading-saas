@@ -266,7 +266,10 @@ def backtest():
         logger.exception("Backtest failed.")
         return jsonify({"success": False, "error": str(e)}), 500
 
+@app.route("/")
+def home():
+    return "Hello, Flask is running!"
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=os.getenv("PORT"), debug=True)
+    app.run(host="0.0.0.0", port=os.getenv("PORT"))
