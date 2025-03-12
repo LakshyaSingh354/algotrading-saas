@@ -8,3 +8,4 @@ supabase
 pyotp
 python-dotenv
 gunicorn
+websockets
