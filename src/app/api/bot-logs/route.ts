@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const res = await fetch(`http://localhost:8000/logs`);
+    const res = await fetch(`https://algotrading-saas.onrender.com/logs`);
 
     if (!res.ok) {
       return NextResponse.json({ error: "Failed to fetch logs" }, { status: res.status });

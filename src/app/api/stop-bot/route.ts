@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     }
 
     // Stop the bot in the trading automation system
-    await fetch("http://localhost:8000/stop-bot", {
+    await fetch("https://algotrading-saas.onrender.com/stop-bot", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ bot_id }),

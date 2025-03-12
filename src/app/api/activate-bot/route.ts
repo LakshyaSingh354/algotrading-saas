@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     }
     console.log({ bot_id: bot.id, stock_symbol: bot.stock_symbol, user_id: user_id });
     // Send bot details to the trading automation system
-    await fetch("http://localhost:8000/start-bot", {
+    await fetch("https://algotrading-saas.onrender.com/start-bot", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ bot_id: bot.id, stock_symbol: bot.stock_symbol, user_id: user_id }),

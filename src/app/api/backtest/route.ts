@@ -4,7 +4,7 @@ export async function POST(req: Request) {
   try {
     const { strategy_id, stock_symbol, start_date, end_date } = await req.json();
 
-    const res = await fetch("http://localhost:8000/backtest", {
+    const res = await fetch("https://algotrading-saas.onrender.com/backtest", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ strategy_id, stock_symbol, start_date, end_date }),
