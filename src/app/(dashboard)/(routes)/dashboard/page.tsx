@@ -14,11 +14,13 @@ import { useRouter } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { TfiControlBackward } from "react-icons/tfi";
 import { supabase } from "@/lib/supabaseClient";
 import { useState, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { FaRobot } from "react-icons/fa";
 import { MdOutlineFileUpload } from "react-icons/md";
+import { TbClockCog } from "react-icons/tb";
 import { SiMinds } from "react-icons/si";
 
 const tools = [
@@ -51,12 +53,26 @@ const tools = [
 		href: "/strategies",
 	},
 	{
+		label: "Execute Bot",
+		icon: TbClockCog,
+		color: "text-yellow-500",
+		bgColor: "bg-yellow-500/10",
+		href: "/bot-execution",
+	},
+	{
 		label: "Upload Strategy",
 		icon: MdOutlineFileUpload,
 		color: "text-blue-500",
 		bgColor: "bg-blue-500/10",
 		href: "/upload-strategy",
 	},
+	{
+		label: "Backtesting",
+		icon: TfiControlBackward,
+		color: "text-purple-500",
+		bgColor: "bg-purple-500/10",
+		href: "/backtesting",
+	}
 ];
 
 const DashboardPage = () => {

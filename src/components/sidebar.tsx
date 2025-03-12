@@ -12,6 +12,8 @@ import { FC } from "react";
 import { cn } from "@/lib/utils";
 import FreeCounter from "./free-counter";
 import { CiBoxList } from "react-icons/ci";
+import { TfiControlBackward } from "react-icons/tfi";
+import { TbClockCog } from "react-icons/tb";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { SiMinds } from "react-icons/si";
 import { supabase } from "@/lib/supabaseClient";
@@ -50,10 +52,22 @@ const routes = [
     color: "text-red-500",
   },
   {
+    label: "Execute Bot",
+    icon: TbClockCog,
+    href: "/bot-execution",
+    color: "text-yellow-500",
+  },
+  {
     label: "Upload Strategy",
     icon: MdOutlineFileUpload,
     href: "/upload-strategy",
     color: "text-blue-500",
+  },
+  {
+    label: "Backtesting",
+    icon: TfiControlBackward,
+    href: "/backtesting",
+    color: "text-purple-500",
   }
 ];
 

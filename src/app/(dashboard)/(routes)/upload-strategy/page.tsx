@@ -24,7 +24,9 @@ export default function StrategyUpload() {
       // Upload file to Supabase Storage
       const { data: session, error: sessionError } =
         await supabase.auth.getSession();
-      const filePath = `strategies/${file.name}_${session?.session?.user?.id}`;
+      let file_name = file.name.split(".")[0];
+      file_name = `${file_name}_${session?.session?.user?.id}.py`;
+      const filePath = `strategies/${file_name}`;
       const { data: fileData, error: fileError } = await supabase.storage
         .from("strategies")
         .upload(filePath, file);
@@ -45,7 +47,7 @@ export default function StrategyUpload() {
           param_3: parseFloat(param3),
           param_4: param4,
           param_5: param5,
-          file_path: `${fileData?.path}_${session?.session?.user?.id}`,
+          file_path: `${fileData?.path}`,
         },
       ]);
   
