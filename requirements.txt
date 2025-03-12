@@ -7,3 +7,4 @@ flask-cors
 supabase
 pyotp
 python-dotenv
+gunicorn
