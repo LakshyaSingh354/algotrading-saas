@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 
 interface Strategy {
   id: number;
-  user_id: number;
+  user_id: number | null;
   name: string;
   param_1: number;
   param_2: number;
@@ -21,13 +21,14 @@ interface User {
 }
 
 export default function StrategiesPage() {
-    const [strategies, setStrategies] = useState<Strategy[]>([]);
+    const [predefinedStrategies, setPredefinedStrategies] = useState<Strategy[]>([]);
+    const [userStrategies, setUserStrategies] = useState<Strategy[]>([]);
     const [user, setUser] = useState<User | null>(null);
   
     useEffect(() => {
       async function fetchData() {
         const { data: session, error: sessionError } =
-				await supabase.auth.getSession();
+          await supabase.auth.getSession();
         const { data: userData, error: userError } = await supabase
           .from("users")
           .select("username, profile_picture")
@@ -39,57 +40,79 @@ export default function StrategiesPage() {
         const { data: strategyData, error: strategyError } = await supabase
           .from("py_strategies")
           .select("*")
-          .eq("user_id", session?.session?.user?.id);
+          .or(`user_id.eq.${session?.session?.user?.id},user_id.is.null`);
   
-        if (strategyData) setStrategies(strategyData);
+        if (strategyData) {
+          // Separate strategies into predefined and user-defined
+          const predefined = strategyData.filter(strategy => strategy.user_id === null);
+          const userDefined = strategyData.filter(strategy => strategy.user_id !== null);
+          
+          setPredefinedStrategies(predefined);
+          setUserStrategies(userDefined);
+        }
+        
         if (strategyError) console.error("Error fetching strategies:", strategyError.message);
       }
   
       fetchData();
     }, []);
+
+    const renderStrategyTable = (strategies: Strategy[]) => {
+      return (
+        <div>
+          <table className="w-full border-collapse mt-5 bg-[#222] rounded-lg overflow-hidden">
+              <thead>
+                <tr className="bg-[#2196f3] text-white">
+                  <th className="p-3 text-left border-b border-[#444]">Name</th>
+                  <th className="p-3 text-left border-b border-[#444]">Par 1</th>
+                  <th className="p-3 text-left border-b border-[#444]">Par 2</th>
+                  <th className="p-3 text-left border-b border-[#444]">Par 3</th>
+                  <th className="p-3 text-left border-b border-[#444]">Par 4</th>
+                  <th className="p-3 text-left border-b border-[#444]">Par 5</th>
+                  <th className="p-3 text-left border-b border-[#444]">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {strategies.length > 0 ? (
+                  strategies.map((strategy) => (
+                    <tr key={strategy.id} className="hover:bg-[rgba(33,150,243,0.2)]">
+                      <td className="p-3 border-b border-[#444]">{strategy.name}</td>
+                      <td className="p-3 border-b border-[#444]">{strategy.param_1}</td>
+                      <td className="p-3 border-b border-[#444]">{strategy.param_2}</td>
+                      <td className="p-3 border-b border-[#444]">{strategy.param_3}</td>
+                      <td className="p-3 border-b border-[#444]">{strategy.param_4}</td>
+                      <td className="p-3 border-b border-[#444]">{strategy.param_5}</td>
+                      <td>
+                        <Link href={`/edit-strategy/${strategy.id}`} className="bg-[#2196f3] text-white px-3 py-2 rounded transition duration-300 hover:bg-[#64b5f6] hover:shadow-[0_0_10px_#64b5f6]">
+                          Edit
+                        </Link>
+                      </td>
+                    </tr>))
+                ) : (
+                  <tr>
+                    <td colSpan={8}>No strategies found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+        </div>
+      );
+    }
   
     return (
       <div className="p-8 bg-gray-900 min-h-screen mt-[-35px]">
   
         <main className="container">
           <h2>📊 Strategies Control Panel</h2>
-  
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Par 1</th>
-                <th>Par 2</th>
-                <th>Par 3</th>
-                <th>Par 4</th>
-                <th>Par 5</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {strategies.length > 0 ? (
-                strategies.map((strategy) => (
-                  <tr key={strategy.id}>
-                    <td>{strategy.name}</td>
-                    <td>{strategy.param_1}</td>
-                    <td>{strategy.param_2}</td>
-                    <td>{strategy.param_3}</td>
-                    <td>{strategy.param_4}</td>
-                    <td>{strategy.param_5}</td>
-                    <td>
-                      <Link href={`/edit-strategy/${strategy.id}`} className="edit-button">
-                        Edit
-                      </Link>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={8}>No strategies found.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <h3 className="text-2xl text-blue-300">Predefined Strategies</h3>
+            {renderStrategyTable(predefinedStrategies)}
+          <h3 className="text-2xl text-blue-300 my-8">Your Strategies</h3>
+            {renderStrategyTable(userStrategies)}
+          <div className="mt-8">
+          <Link href="/upload-strategy" className="bg-[#2196f3] text-white px-3 py-2 rounded transition duration-300 hover:bg-[#64b5f6] hover:shadow-[0_0_10px_#64b5f6]">
+            Create Strategy
+          </Link>
+          </div>
         </main>
   
         <style jsx>{`
