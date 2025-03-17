@@ -15,33 +15,24 @@ interface Strategy {
   param_5: string;
 }
 
-interface User {
-  username: string;
-  profile_picture?: string;
-}
 
 export default function StrategiesPage() {
     const [predefinedStrategies, setPredefinedStrategies] = useState<Strategy[]>([]);
     const [userStrategies, setUserStrategies] = useState<Strategy[]>([]);
-    const [user, setUser] = useState<User | null>(null);
   
     useEffect(() => {
       async function fetchData() {
         const { data: session, error: sessionError } =
           await supabase.auth.getSession();
-        const { data: userData, error: userError } = await supabase
-          .from("users")
-          .select("username, profile_picture")
-          .single();
-  
-        if (userData) setUser(userData);
-        if (userError) console.error("Error fetching user:", userError.message);
-  
+        console.log(`Id:: ${session?.session?.user?.id}`);
+        const { data: { user }, error } = await supabase.auth.getUser();
+        console.log(session?.session?.user.user_metadata.is_subscribed);
+        console.log(`User:: ${user}`);
         const { data: strategyData, error: strategyError } = await supabase
           .from("py_strategies")
           .select("*")
           .or(`user_id.eq.${session?.session?.user?.id},user_id.is.null`);
-  
+
         if (strategyData) {
           // Separate strategies into predefined and user-defined
           const predefined = strategyData.filter(strategy => strategy.user_id === null);

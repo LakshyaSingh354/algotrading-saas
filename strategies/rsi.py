@@ -42,7 +42,7 @@ def calculate_rsi(df, period=14):
 # -----------------------------------------------------------------------------
 # Backtesting Function
 # -----------------------------------------------------------------------------
-def backtest_rsi_strategy(stock_symbol, start_date, end_date, rsi_period=14, oversold_threshold=30, overbought_threshold=70):
+def backtest_strategy(stock_symbol, start_date, end_date, rsi_period=14, oversold_threshold=30, overbought_threshold=70):
     """
     Perform backtesting using an RSI-based strategy:
     - Buy signal when RSI < oversold threshold (default: 30)
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     start = (datetime.today() - timedelta(days=60)).strftime("%Y-%m-%d")
     end = datetime.today().strftime("%Y-%m-%d")
 
-    result = backtest_rsi_strategy(stock, start, end)
+    result = backtest_strategy(stock, start, end)
     
     if result is not None:
         print(result.tail(10))  # Print last 10 rows for testing

@@ -255,8 +255,9 @@ def backtest():
     try:
         logger.info(f"Running backtest for {stock_symbol} from {start_date} to {end_date}")
         backtest_results = strategy_module.backtest_strategy(stock_symbol, start_date, end_date)
-        backtest_results = backtest_results.to_dict(orient="records")
         # backtest_results = backtest_results.fillna(0)
+        backtest_results = backtest_results.reset_index()
+        backtest_results = backtest_results.to_dict(orient="records")
         if backtest_results is None or len(backtest_results) == 0:
             return jsonify({"success": False, "error": "No backtest results found"}), 404
         logger.info("Backtest successful.")
